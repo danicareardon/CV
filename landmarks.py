@@ -26,17 +26,17 @@ class Landmarks(object):
         """
         return np.mean(self.points, axis=0)
 
-    def translate_centre_to_origin(self):
-        """translates the centre of gravity to be at the original
-        for the first step in shape alignment
+    def translate_to_origin(self):
+        """translates model so that the centroid is at the origin
 
         Returns:
             [x,y] : translated points
         """
         centroid = self.get_centroid()
         points = self.points - centroid
-        print(str(points))
         return Landmarks(points)
+
+
 
     def _read_landmarks(self, file):
         """reads the landmarks from a file
@@ -69,7 +69,6 @@ def load_landmarks(directory, incisor, mirrored):
         mirrored_files = glob.glob(directory + "mirrored/*-" + str(incisor) + ".txt")
         files += mirrored_files
     for file in files:
-        print(str(file))
         landmarks.append(Landmarks(file))
     return landmarks
 

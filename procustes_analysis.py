@@ -13,8 +13,8 @@ def procrustes(landmarks):
     aligned = list(landmarks)
 
     # 1 Translate each example so that its centre of gravity is at the origin.
-    aligned = [shape.translate_centre_to_origin() for shape in aligned]
-     
+    # aligned = [shape.translate_to_origin() for shape in aligned]
+
     # 2 Choose one examplle as an initial estimate of the mean shape and scale so that |x0| = 1.
 
     # 3 Define default orientation.

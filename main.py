@@ -11,6 +11,7 @@ Python 3.5
 
 import os
 from landmarks import load_landmarks, Landmarks
+from procustes_analysis import procrustes
 
 def main():
     directory = os.path.join(".", "_Data/Landmarks/")
@@ -21,6 +22,7 @@ def main():
 
 
         # 1.2 process landmarks (Procrustes Analysis?)
+        procrustes(landmarks)
 
         # 1.3
 
