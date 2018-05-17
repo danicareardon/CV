@@ -10,32 +10,50 @@ class Landmarks(object):
         """new set of landmarks
 
         Args:
-            data (str || [x_0,y_0,...,x_n,y_n]): The filepath of the landmark file || an array of points
+            data (str || [x_0,y_0,...,x_n,y_n]): The filepath of the landmark file || an array of coordinates
         """
-        if data:
+        if data is not None:
             if isinstance(data, str):
                 self._read_landmarks(data)
-            elif isinstance(data,np.ndarray) and data.shape[1] is 2:
-                self.points = data
+            elif isinstance(data,np.ndarray) and data.shape[1] == 2:
+                self.coordinates = data
 
     def get_centroid(self):
-        """Gets the centroid of the points
+        """Gets the centroid of the coordinates
 
         Returns:
             [x,y] : the centroid
         """
-        return np.mean(self.points, axis=0)
+        return np.mean(self.coordinates, axis=0)
 
     def translate_to_origin(self):
         """translates model so that the centroid is at the origin
 
         Returns:
-            [x,y] : translated points
+            [x,y] : translated coordinates
         """
         centroid = self.get_centroid()
-        points = self.points - centroid
-        return Landmarks(points)
+        coordinates = self.coordinates - centroid
+        return Landmarks(coordinates)
 
+    def scale_to_one(self):
+        """scales the landmark so that the normalized shape is 1
+
+        Returns:
+            [x,y] : coordinates normalized to 1
+        """
+        centroid = self.get_centroid()
+        factor = np.sqrt(np.power(self.coordinates - centroid, 2).sum())
+        coordinates = self.coordinates.dot(1. / factor)
+        return Landmarks(coordinates)
+
+    def get_vector(self):
+        """returns the points as a vector
+
+        Returns:
+            [x0,y0,x1,y1,...xn,yn]
+        """
+        return np.hstack((self.points[:,0],self.points[:,1]))
 
 
     def _read_landmarks(self, file):
@@ -44,12 +62,12 @@ class Landmarks(object):
         Args:
             file: path to landmark file
         """
-        points = []
+        coordinates = []
         #https://stackoverflow.com/questions/1657299/how-do-i-read-two-lines-from-a-file-at-a-time-using-python
         lines = open(file).readlines()
         for x, y in zip(lines[0::2], lines[1::2]):
-            points.append(np.array([float(x),float(y)]))
-        self.points = np.array(points)
+            coordinates.append(np.array([float(x),float(y)]))
+        self.coordinates = np.array(coordinates)
 
 
 def load_landmarks(directory, incisor, mirrored):
