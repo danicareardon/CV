@@ -16,13 +16,15 @@ def procrustes(landmarks):
     aligned = [shape.translate_to_origin() for shape in aligned]
 
     # 2 Choose one example as an initial estimate of the mean shape and scale so that |x0| = 1.
-    x0 = aligned[0].scale_to_one()
-
     # 3 Define default orientation.
-    mean = x0
+    mean_shape = aligned[0].scale_to_one()
 
     # 4 Align all the shapes with the current estimate of the mean shape.
     while True:
+        for i, shape in enumerate(aligned):
+            aligned[i] = align_two_shapes(shape,mean_shape)
+
+        
 
 
     # 5 Re-estimate the mean from the aligned shapes
@@ -44,7 +46,12 @@ def align_two_shapes(shape1,shape2):
         [Landmarks] : shape 1 aligned
     """
     s, theta = get_s_and_theta(shape1,shape2)
-    
+
+    shape1 = shape1.rotate(theta)
+    shape1 = shape1.scale(s)
+
+    scaled = np.dot(shape1.get_vector(), shape2.get_vector())
+    return Landmarks(shape1.get_vector()*(1.0/scaled))
 
 
 def get_s_and_theta(shape1,shape2):
@@ -62,11 +69,12 @@ def get_s_and_theta(shape1,shape2):
     shape1 = shape1.get_vector()
     shape2 = shape2.get_vector()
 
-    len1 = len(shape1)/2
-    len2 = len(shape2)/2
+    len1 = int(len(shape1)/2)
+    len2 = int(len(shape2)/2)
 
-    a = np.dot(shape1,shape2) / (np.linalg.norm(x1)**2)
-    b = (np.dot(shape1[:len1], shape2[len2:]) - np.dot(shape1[len1:], shape2[:len2])) / (np.linalg.norm(x1)**2)
+
+    a = np.dot(shape1,shape2) / (np.linalg.norm(shape1)**2)
+    b = (np.dot(shape1[:len1], shape2[len2:]) - np.dot(shape1[len1:], shape2[:len2])) / (np.linalg.norm(shape1)**2)
 
     s = np.sqrt(a**2+b**2)
 

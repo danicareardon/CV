@@ -15,6 +15,9 @@ class Landmarks(object):
         if data is not None:
             if isinstance(data, str):
                 self._read_landmarks(data)
+            elif isinstance(data, np.ndarray) and np.atleast_2d(data).shape[0] == 1:
+                lngth = int(len(data)/2)
+                self.coordinates = np.array((data[:lngth], data[lngth:])).T
             elif isinstance(data,np.ndarray) and data.shape[1] == 2:
                 self.coordinates = data
 
@@ -55,7 +58,7 @@ class Landmarks(object):
         """
         centroid = self.get_centroid()
         coordinates = (self.coordinates - centroid).dot(value) + centroid
-        return Landmarks(points)
+        return Landmarks(coordinates)
 
     def rotate(self,theta):
         """rotates the landmark to theta
@@ -64,16 +67,25 @@ class Landmarks(object):
             [Landmarks] : rotates landmarks
         """
         c, s = np.cos(theta), np.sin(theta)
-        R = np.array(((c,-s),(s,c)))
+        R = np.array([[c, s], [-s, c]])
+
+        coordinates = np.zeros_like(self.coordinates)
+        centroid = self.get_centroid()
+        translated = self.coordinates - centroid
+        for i in range(len(translated)):
+            coordinates[i,:] = translated[i, :].dot(R)
+        coordinates = coordinates + centroid
+        return Landmarks(coordinates)
+
 
 
     def get_vector(self):
-        """returns the points as a vector
+        """returns the coordinates as a vector
 
         Returns:
             [x0,y0,x1,y1,...xn,yn]
         """
-        return np.hstack((self.points[:,0],self.points[:,1]))
+        return np.hstack((self.coordinates[:,0],self.coordinates[:,1]))
 
 
     def _read_landmarks(self, file):
