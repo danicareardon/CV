@@ -8,6 +8,8 @@ def procrustes(landmarks):
         landmarks (list[Landmarks]) : all landmarks for an incisors
 
     Returns:
+        mean_shape ([Landmarks]) : estimate of the mean_shape
+        aligned (List[Landmarks]) : all landmarks aligned to the mean
 
     """
     aligned = list(landmarks)
@@ -17,21 +19,42 @@ def procrustes(landmarks):
 
     # 2 Choose one example as an initial estimate of the mean shape and scale so that |x0| = 1.
     # 3 Define default orientation.
-    mean_shape = aligned[0].scale_to_one()
+    x0 = aligned[0].scale_to_one()
+    mean_shape = x0
 
     # 4 Align all the shapes with the current estimate of the mean shape.
     while True:
         for i, shape in enumerate(aligned):
             aligned[i] = align_two_shapes(shape,mean_shape)
 
-        
 
+        # 5 Re-estimate the mean from the aligned shapes
+        temp_mean_shape = get_new_mean_shape(aligned)
 
-    # 5 Re-estimate the mean from the aligned shapes
+        # 6 Apply the constrants and scale and orientation to the current estimate of the mean by aligning it with |x0| and scaling so that |x| = 1
+        temp_mean_shape = align_two_shapes(temp_mean_shape,x0)
+        temp_mean_shape = temp_mean_shape.scale_to_one().translate_to_origin()
 
-    # 6 Apply the constrants and scale and orientation to the current estimate of the mean by aligning it with |x0| and scaling so that |x| = 1
+        #7 If not converged return to 4. Convergence is declared if the estimate of the mean does not change significantly after an iteration)
+        if ((mean_shape.get_vector() - temp_mean_shape.get_vector()) < 1e-10).all():
+            break
+        mean_shape = temp_mean_shape
+    return mean_shape, aligned
 
-    #7 If not converged return to 4. Convergence is clared if the estimate of the mean does not change significantly after an iteration)
+def get_new_mean_shape(landmarks):
+    """Gets the updated mean shape
+
+    Args:
+        landmarks list[Landmarks] : list of landmark objects
+
+    Returns:
+        A new mean shape as a [Landmarks]
+    """
+    m = []
+    for landmark in landmarks:
+        m.append(landmark.get_vector())
+    m = np.array(m)
+    return Landmarks(np.mean(m, axis=0))
 
 
 def align_two_shapes(shape1,shape2):
