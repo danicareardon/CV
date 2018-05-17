@@ -47,6 +47,26 @@ class Landmarks(object):
         coordinates = self.coordinates.dot(1. / factor)
         return Landmarks(coordinates)
 
+    def scale(self,value):
+        """scales the landmark to value
+
+        Returns:
+            [Landmarks] : scaled landmarks
+        """
+        centroid = self.get_centroid()
+        coordinates = (self.coordinates - centroid).dot(value) + centroid
+        return Landmarks(points)
+
+    def rotate(self,theta):
+        """rotates the landmark to theta
+
+        Returns:
+            [Landmarks] : rotates landmarks
+        """
+        c, s = np.cos(theta), np.sin(theta)
+        R = np.array(((c,-s),(s,c)))
+
+
     def get_vector(self):
         """returns the points as a vector
 
