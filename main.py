@@ -9,20 +9,20 @@ Student Number: r0604915
 Python 3.5
 """
 
-from landmarks import load_landmarks
+import os
+from landmarks import load_landmarks, Landmarks
 
 def main():
-    directory = os.path.join(".", "/_Data/Landmarks/")
-    incisor_segmentations = []
+    directory = os.path.join(".", "_Data/Landmarks/")
 
     for incisor in range(1,9):
         # 1.1 load landmarks
         landmarks = load_landmarks(directory, incisor, mirrored=True)
 
+
         # 1.2 process landmarks (Procrustes Analysis?)
 
         # 1.3
-
 
 
 
