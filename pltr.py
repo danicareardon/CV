@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import cv2 as cv
+import cv2
 from landmarks import Landmarks
 
 def plot_all_landmarks(landmarks, num):
@@ -32,13 +32,6 @@ def plot_all_landmarks(landmarks, num):
         for i in range(0,len(coordinates)):
             img[int(coordinates[i,1] - min(minY)) + 5, int(coordinates[i,0] - min(minX)) + 5] = 1
 
-    cv.imshow('Landmarks ' + str(num), img)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-
-def plot_asm(reduced,mean,num):
-    """plots the asm for all reduced eigenvalues
-    """
-    n,d = reduced.shape
-    for i in range(0,d):
-        data = reduced[:,i]
+    cv2.imshow('Landmarks ' + str(num), img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

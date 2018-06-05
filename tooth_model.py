@@ -1,5 +1,7 @@
 from procustes_analysis import procrustes
 from pca import pca_code
+import pltr as plotter
+import matplotlib.pyplot as MPL
 
 class Tooth(object):
     """class for each incisor
@@ -36,4 +38,5 @@ class Tooth(object):
         self.preprocess(landmarks)
 
         # perform PCA analysis
-        self.asm = pca_code(self.aligned)
+        reduced, evals, evecs = pca_code(self.aligned)
+        self.asm = reduced

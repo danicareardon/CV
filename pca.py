@@ -1,6 +1,8 @@
 import numpy as np
 from procustes_analysis import procrustes
-import landmarks as lms
+from landmarks import get_vectors, Landmarks
+from matplotlib.mlab import PCA
+from scipy import linalg as LA
 
 def pca_code(landmarks):
     """ performing PCA to build an ASM
@@ -15,17 +17,22 @@ def pca_code(landmarks):
 
     var_per = 0.98
 
-    X = lms.get_vectors(landmarks)
+    # covariance matrix
+    X = get_vectors(landmarks)
     cov = np.cov(X, rowvar=0)
 
-    evals, evecs = np.linalg.eigh(cov)
+    # get the eigs
+    evals, evecs = LA.eigh(cov)
 
+    # sort by highest eigenvalue
     idx = np.argsort(-evals)
     evals = evals[idx]
     evecs = evecs[:,idx]
 
+    # choose number of eigenvectors for new dataset
     var = np.cumsum(evals)/np.sum(evals)
     i = np.argmax(var>=var_per)
-    evecs = evecs[:,:i+1]
-    reduced = np.dot(evecs.T, X.T).T
-    return reduced
+    evecs = evecs[:,:i]
+
+    reduced = np.dot(evecs.T,X.T).T
+    return reduced, evals, evecs
