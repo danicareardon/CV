@@ -20,9 +20,8 @@ def main():
         # 1.1 load landmarks
         landmarks = load_landmarks(directory, num, mirrored=False)
         tooth = Tooth(num)
-        mean_shape, aligned = tooth.preprocess(landmarks)
 
-        tooth.ASM(mean_shape, aligned)
+        tooth.ASM(landmarks)
 
 
         # 1.2 process landmarks (Procrustes Analysis?)
