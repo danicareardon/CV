@@ -22,7 +22,7 @@ def main():
         tooth = Tooth(num)
         mean_shape, aligned = tooth.preprocess(landmarks)
 
-        tooth.train(mean_shape, aligned)
+        tooth.ASM(mean_shape, aligned)
 
 
         # 1.2 process landmarks (Procrustes Analysis?)
