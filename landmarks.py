@@ -89,7 +89,21 @@ class Landmarks(object):
     def get_matrix(self):
         """returns the coordinates as a matrix
         """
-        return self.points
+        return self.coordinates
+        
+    def get_min(self):
+        """ returns the minimum X and Y values
+        """
+        X = self.coordinates[:,0].min()
+        Y = self.coordinates[:,1].min()
+        return X,Y
+    
+    def get_max(self):
+        """ returns the maximum X and Y values
+        """
+        X = self.coordinates[:,0].max()
+        Y = self.coordinates[:,1].max()
+        return X,Y
 
 
     def _read_landmarks(self, file):
