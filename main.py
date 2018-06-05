@@ -16,7 +16,7 @@ from tooth_model import Tooth
 def main():
     directory = os.path.join(".", "_Data/Landmarks/")
 
-    for num in range(1, 2):
+    for num in range(1, 9):
         # 1.1 load landmarks
         landmarks = load_landmarks(directory, num, mirrored=False)
         tooth = Tooth(num)
