@@ -1,7 +1,8 @@
 import numpy as np
 from landmarks import Landmarks
+import pltr
 
-def procrustes(landmarks):
+def procrustes(landmarks,num):
     """Applies Procrustes Analysis to landmark models based on An Introduction to Active Shape Models Protocal 4: Aligning a Set of Shapes and Active Shape Models-Their Training and Application Section 3.2
 
     Args:
@@ -16,6 +17,7 @@ def procrustes(landmarks):
 
     # 1 Translate each example so that its centre of gravity is at the origin.
     aligned = [shape.translate_to_origin() for shape in aligned]
+    # pltr.plot_all_landmarks(aligned,num)
 
     # 2 Choose one example as an initial estimate of the mean shape and scale so that |x0| = 1.
     # 3 Define default orientation.
@@ -30,7 +32,6 @@ def procrustes(landmarks):
 
         # 5 Re-estimate the mean from the aligned shapes
         temp_mean_shape = get_new_mean_shape(aligned)
-
         # 6 Apply the constrants and scale and orientation to the current estimate of the mean by aligning it with |x0| and scaling so that |x| = 1
         temp_mean_shape = align_two_shapes(temp_mean_shape,x0)
         temp_mean_shape = temp_mean_shape.scale_to_one().translate_to_origin()
@@ -39,6 +40,7 @@ def procrustes(landmarks):
         if ((mean_shape.get_vector() - temp_mean_shape.get_vector()) < 1e-10).all():
             break
         mean_shape = temp_mean_shape
+    pltr.plot_all_landmarks([mean_shape.scale(500)],num)
     return mean_shape, aligned
 
 def get_new_mean_shape(landmarks):
