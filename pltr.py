@@ -35,3 +35,10 @@ def plot_all_landmarks(landmarks, num):
     cv.imshow('Landmarks ' + str(num), img)
     cv.waitKey(0)
     cv.destroyAllWindows()
+
+def plot_asm(reduced,mean,num):
+    """plots the asm for all reduced eigenvalues
+    """
+    n,d = reduced.shape
+    for i in range(0,d):
+        data = reduced[:,i]

@@ -2,47 +2,30 @@ import numpy as np
 from procustes_analysis import procrustes
 import landmarks as lms
 
-def PCA(landmarks):
+def pca_code(landmarks):
     """ performing PCA to build an ASM
 
     Args:
         landmarks (list[Landmarks]) : all aligned landmarks for a tooth
 
     """
+    # based off of Assignment 3
+    # and https://stackoverflow.com/questions/31909945/obtain-eigen-values-and-
+    # vectors-from-sklearn-pca answer
 
-    XVec = lms.get_vectors(landmarks)
-    covari = np.cov(XVec, rowvar=0)
-    #
-    # #performing PCA
-    # eigen_values, eigen_vectors = np.linalg.eigh(covari)
-    # sortx = np.argsort(-eigen_values)
-    # eigen_values = eigen_values[sortx]
-    # eigen_vectors = eigen_vectors[:, sortx]
-    #
-    # vari = np.cumsum(eigen_values/np.sum(eigen_values))
-    #
-    # n_princ_comps, _ = extraction_of_components(vari > 0.99)
-    # n_princ_comps += 1
-    #
-    # P = []
-    # for i in range(0, n_princ_comps-1):
-    #     P.append(np.sqrt(eigen_values[i]) * eigen_values[:, i])
-    # princ_modes = np.array(P).squeeze().T
-    #
-    # return princ_modes
+    var_per = 0.98
 
+    X = lms.get_vectors(landmarks)
+    cov = np.cov(X, rowvar=0)
 
-# def to_vectors(landmarks):
-#     """
-#     Method to convert a list of premade landmarks to vector format for PCA.
-#     """
-#     coord_array = []
-#     for mrks in landmarks:
-#         coord_array.append(mrks.get_vector())
-#     return np.array(coord_array)
+    evals, evecs = np.linalg.eigh(cov)
 
-#model building
-def extraction_of_components(arr):
-    for index, item in enumerate(arr):
-        if item:
-            return index,item
+    idx = np.argsort(-evals)
+    evals = evals[idx]
+    evecs = evecs[:,idx]
+
+    var = np.cumsum(evals)/np.sum(evals)
+    i = np.argmax(var>=var_per)
+    evecs = evecs[:,:i+1]
+    reduced = np.dot(evecs.T, X.T).T
+    return reduced

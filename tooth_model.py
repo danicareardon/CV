@@ -1,5 +1,5 @@
 from procustes_analysis import procrustes
-from pca import PCA
+from pca import pca_code
 
 class Tooth(object):
     """class for each incisor
@@ -36,4 +36,4 @@ class Tooth(object):
         self.preprocess(landmarks)
 
         # perform PCA analysis
-        self.asm = PCA(self.aligned)
+        self.asm = pca_code(self.aligned)
