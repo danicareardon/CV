@@ -14,11 +14,13 @@ def pca_code(landmarks):
     # based off of Assignment 3
     # and https://stackoverflow.com/questions/31909945/obtain-eigen-values-and-
     # vectors-from-sklearn-pca answer
+    X = get_vectors(landmarks)
+    mu = X.mean(axis=0)
+    X = X - mu
 
     var_per = 0.98
 
     # covariance matrix
-    X = get_vectors(landmarks)
     cov = np.cov(X, rowvar=0)
 
     # get the eigs
@@ -35,4 +37,4 @@ def pca_code(landmarks):
     evecs = evecs[:,:i]
 
     reduced = np.dot(evecs.T,X.T).T
-    return reduced, evals, evecs
+    return reduced, evals, evecs,mu
