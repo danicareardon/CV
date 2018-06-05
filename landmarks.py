@@ -78,7 +78,6 @@ class Landmarks(object):
         return Landmarks(coordinates)
 
 
-
     def get_vector(self):
         """returns the coordinates as a vector
 
@@ -86,6 +85,11 @@ class Landmarks(object):
             [x0,y0,x1,y1,...xn,yn]
         """
         return np.hstack((self.coordinates[:,0],self.coordinates[:,1]))
+        
+    def get_matrix(self):
+        """returns the coordinates as a matrix
+        """
+        return self.points
 
 
     def _read_landmarks(self, file):
