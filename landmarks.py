@@ -85,19 +85,19 @@ class Landmarks(object):
             [x0,y0,x1,y1,...xn,yn]
         """
         return np.hstack((self.coordinates[:,0],self.coordinates[:,1]))
-        
+
     def get_matrix(self):
         """returns the coordinates as a matrix
         """
         return self.coordinates
-        
+
     def get_min(self):
         """ returns the minimum X and Y values
         """
         X = self.coordinates[:,0].min()
         Y = self.coordinates[:,1].min()
         return X,Y
-    
+
     def get_max(self):
         """ returns the maximum X and Y values
         """
@@ -139,6 +139,17 @@ def load_landmarks(directory, incisor, mirrored):
     for file in files:
         landmarks.append(Landmarks(file))
     return landmarks
+
+def get_vectors(landmarks):
+    """gets the landmarks to be vectors
+
+    Args:
+        landmarks (list[Landmarks]) : list of landmarks
+    """
+    arr = []
+    for landmark in landmarks:
+        arr.append(landmark.get_vector())
+    return np.array(arr)
 
 if __name__ == "__main__":
     dir = os.path.join(".", "_Data/Landmarks/")

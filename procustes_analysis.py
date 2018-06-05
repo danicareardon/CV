@@ -40,7 +40,7 @@ def procrustes(landmarks,num):
         if ((mean_shape.get_vector() - temp_mean_shape.get_vector()) < 1e-10).all():
             break
         mean_shape = temp_mean_shape
-    pltr.plot_all_landmarks([mean_shape.scale(500)],num)
+    # pltr.plot_all_landmarks([mean_shape.scale(500)],num)
     return mean_shape, aligned
 
 def get_new_mean_shape(landmarks):

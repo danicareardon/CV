@@ -1,6 +1,5 @@
 from procustes_analysis import procrustes
-from pca_model import PCA
-from landmarks import Landmarks
+from pca import PCA
 
 class Tooth(object):
     """class for each incisor
@@ -24,7 +23,7 @@ class Tooth(object):
                 mean_shape ([Landmarks]) : estimate of the mean_shape
                 aligned (List[Landmarks]) : all landmarks aligned to the mean
         """
-        return procrustes(landmarks,self.num)
+        self.mean_shape, self.aligned = procrustes(landmarks,self.num)
 
     def ASM(self,landmarks):
         """performs ASM on the models
@@ -33,4 +32,8 @@ class Tooth(object):
                 landmarks (list[Landmarks]) : all landmarks for an incisors
 
         """
-        mean_shape, aligned = self.preprocess(landmarks)
+        # preprocess using procrustes
+        self.preprocess(landmarks)
+
+        # perform PCA analysis
+        self.asm = PCA(self.aligned)
