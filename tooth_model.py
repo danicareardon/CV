@@ -38,5 +38,4 @@ class Tooth(object):
         self.preprocess(landmarks)
 
         # perform PCA analysis
-        reduced, evals, evecs = pca_code(self.aligned)
-        self.asm = reduced
+        self.reduced, self.evals, self.evecs, self.mu = pca_code(self.aligned)
