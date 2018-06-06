@@ -41,6 +41,17 @@ class Radiograph(object):
             self.sobel = img
             self.plot_test(img," ")
 
+        def gaussian_pyramid(self,level):
+            """ creates a guassian image pyramid on self.img
+            """
+            G = self.img.copy()
+            gp = [G]
+            for i in range(0,level+1):
+                G = cv2.pyrDown(G)
+                gp.append(G)
+            self.plot_test(G,"1")
+            return G
+
         def get_path(self):
             """ getter function for the path
             """
@@ -131,6 +142,7 @@ def load_radiographs(x,y):
     return imgs
 
 if __name__ == "__main__":
-    imgs = load_radiographs(1,31)
+    imgs = load_radiographs(1,2)
     for i in imgs:
         i.preprocess()
+        x = i.gaussian_pyramid(2)
