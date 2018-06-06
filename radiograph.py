@@ -20,7 +20,7 @@ class Radiograph(object):
                 path (str): the path of the radiograph image
             """
             self.path = path
-            self.img = cv2.imread(path,cv2.CV_8UC1)
+            self.img = cv2.imread(path,0)
 
         def plot_img(self):
             cv2.imshow('radiograph',self.img)
@@ -35,37 +35,11 @@ class Radiograph(object):
             cv2.destroyAllWindows()
 
         def preprocess(self):
-            # images = []
-            # self.__grayscale()
-            # reduced_noise = self.__noisereduction()
-            # images.append(reduced_noise)
-
-            # self.plot_img()
-            #laplacian = self.__laplacian_filter(reduced_noise)
-            #self.plot_test(laplacian, "laplacian")
-            # images.append(self.__sobel(reduced_noise))
-
-            # sobel = self.__sobel(reduced_noise)
-            # laplacian = self.__laplacian_filter(sobel)
-            # self.__testing(images)
-            # self.plot_test(sobel,"sobel")
-            # self.plot_test(laplacian,"laplacian")
-            # laplacian = self.__laplacian_filter(reduced_noise)
-            # sobel = self.__sobel(laplacian)
-            # self.plot_test(sobel,"sobel")
-            # self.plot_test(laplacian,"laplacian")
-
             img = self.img
             img = self.__noisereduction(img)
-            laplacian = self.__laplacian_filter(img)
-            self.plot_test(laplacian, "laplacian")
-            sobel = self.__sobel(laplacian)
-            self.plot_test(sobel, "sobel")
-            reduced_noise = self.__noisereduction2(sobel)
-            self.plot_test(reduced_noise, "after")
-
-
-
+            img = self.__sobel(img)
+            self.sobel = img
+            self.plot_test(img," ")
 
         def get_path(self):
             """ getter function for the path
@@ -82,81 +56,48 @@ class Radiograph(object):
             """
             self.img = cv2.imread(self.path,cv2.CV_8UC1)
 
-        def __grayscale(self):
+        def __grayscale(self,img):
             """ changes self.img to __grayscale
             """
-            self.img = cv2.cvtColor(self.img, cv2.COLOR_GRAY2BGR)
+            return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
         def __laplacian_filter(self,img):
             """ returns an image with a laplacian filter
             """
-            return cv2.Laplacian(img,cv2.CV_32F)
+            return cv2.Laplacian(img,cv2.CV_64F)
 
         def __sobel(self,img):
             """ returns the sobel detected image based on
             https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_gradients/py_gradients.html
             """
-            sobelx = cv2.Sobel(img,cv2.CV_32F,1,0,ksize=5)
-            sobely = cv2.Sobel(img,cv2.CV_32F,0,1,ksize=5)
-            sobel = np.sqrt(sobelx ** 2 + sobely ** 2)
-            ksize = np.ones((10,10),np.uint8)
-            img_white = cv2.morphologyEx(sobel, cv2.MORPH_TOPHAT, ksize)
-            ksize = np.ones((80,80), np.uint8)
-            img_black = cv2.morphologyEx(sobel, cv2.MORPH_BLACKHAT, ksize)
+            sobelx = cv2.Sobel(img,cv2.CV_64F,1,0,ksize=-1)
+            sobely = cv2.Sobel(img,cv2.CV_64F,0,1,ksize=-1)
+            gradx = cv2.convertScaleAbs(sobelx)
+            grady = cv2.convertScaleAbs(sobely)
+            return cv2.addWeighted(gradx, 0.5, grady, 0.5, 0)
 
-            image = cv2.add(sobel,img_white)
-            image = cv2.subtract(sobel, img_black)
-
-            return image
-
-                # img_bright = morphology.white_tophat(img, size=400)
-                # img_dark = morphology.black_tophat(img, size=80)
-                #
-                # img = cv2.add(img, img_bright)
-                # img = cv2.subtract(img, img_dark)
-                # clahe_obj = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(16, 16))
-                # img = clahe_obj.apply(img)
-
-        def __noisereduction2(self,img):
-            """ performs fastNlMeansDenoising on self.img
+        def __hat_morphology(self,img):
+            """ gets the top and bottom hat morphology
             """
-            # decided to test 9 x 9 with the default BiLateral
-            # gaussian = cv2.GaussianBlur(img,(3,3),0)
-            # median = cv2.medianBlur(img,9)
-            return cv2.GaussianBlur(img,(9,9),0)
+            ksize = np.ones((10,10),np.uint8)
+            img_white = cv2.morphologyEx(img, cv2.MORPH_TOPHAT, ksize)
+            ksize = np.ones((80,80), np.uint8)
+            img_black = cv2.morphologyEx(img, cv2.MORPH_BLACKHAT, ksize)
+            image = cv2.add(img,img_white)
+            image = cv2.subtract(img, img_black)
+            return image
 
         def __noisereduction(self,img):
             """ performs fastNlMeansDenoising on self.img
             """
-            # decided to test 9 x 9 with the default BiLateral
-            # gaussian = cv2.GaussianBlur(img,(3,3),0)
-            median = cv2.medianBlur(img,9)
-            return cv2.bilateralFilter(median,9,75,75)
+            img = cv2.GaussianBlur(img,(5,5),0)
+            img = cv2.bilateralFilter(img, 9, 200, 200)
+            img = self.__hat_morphology(img)
+            return img
 
-            # N1Means = cv2.fastNlMeansDenoising(self.img,None, 4, 7, 35)
-            # self.plot_test(N1Means, "n1")
-            # image = []
-            # image.append(self.img)
-            # Guassian = cv2.GaussianBlur(self.img,(5,5),0)
-            # BiLateral = cv2.bilateralFilter(Guassian,9,75,75)
-            # image.append(Guassian)
-            # image.append(BiLateral)
-            # self.__testing(image)
-
-            # image = []
-            # # BiLateral = cv2.bilateralFilter(Guassian,9,75,75)
-            # image.append(self.img)
-            # image.append(cv2.GaussianBlur(self.img,(5,5),0))
-            # image.append(cv2.GaussianBlur(self.img,(9,9),0))
-            # image.append(cv2.GaussianBlur(self.img,(13,13),0))
-            # self.__testing(image)
-            # self.plot_test(Guassian, "Guassian")
-            # # Median = cv2.medianBlur(self.img,5)
-            # # self.plot_test(Median, "Median")
-            # BiLateral =
-            # self.plot_test(BiLateral, "BiLateral")
-            #
-            # return cv2.fastNlMeansDenoising(self.img,None, 4, 7, 35)
+        def __clahe(self,img):
+            clahe_obj = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(14, 14))
+            return clahe_obj.apply(img)
 
         def __testing(self,images):
             """ displays a list of images
@@ -190,7 +131,6 @@ def load_radiographs(x,y):
     return imgs
 
 if __name__ == "__main__":
-    imgs = load_radiographs(1,2)
-    img = imgs[0]
-    print(img.get_path())
-    img.preprocess()
+    imgs = load_radiographs(1,31)
+    for i in imgs:
+        i.preprocess()
