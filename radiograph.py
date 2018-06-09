@@ -39,7 +39,7 @@ class Radiograph(object):
             img = self.__noisereduction(img)
             img = self.__sobel(img)
             self.sobel = img
-            self.plot_test(img," ")
+            #self.plot_test(img," ")
 
         def gaussian_pyramid(self,level):
             """ creates a guassian image pyramid on self.img
