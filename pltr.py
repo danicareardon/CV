@@ -35,3 +35,12 @@ def plot_all_landmarks(landmarks, num):
     cv2.imshow('Landmarks ' + str(num), img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+def draw_landmark_on_image(self,img,landmarks,color):
+    for landmark in landmarks:
+        coordinates = landmark.get_matrix()
+        cv2.circle(img,(int(landmark[0]), int(landmark[1])), 2, color, thickness=2)
+    cv2.namedWindow("landmark on img", cv2.WINDOW_NORMAL)
+    cv2.imshow("landmark on img", img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
