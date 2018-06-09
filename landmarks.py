@@ -105,6 +105,15 @@ class Landmarks(object):
         Y = self.coordinates[:,1].max()
         return X,Y
 
+    def get_x(self):
+        """ returns all X coordinates
+        """
+        return self.coordinates[:,0]
+
+    def get_y(self):
+        """ returns all X coordinates
+        """
+        return self.coordinates[:,1]
 
     def _read_landmarks(self, file):
         """reads the landmarks from a file
@@ -118,6 +127,31 @@ class Landmarks(object):
         for x, y in zip(lines[0::2], lines[1::2]):
             coordinates.append(np.array([float(x),float(y)]))
         self.coordinates = np.array(coordinates)
+
+    def get_edge(self,normalised,radiograph):
+        landmark = (self.get_x()[0],self.get_y()[0])
+        centre = landmark
+        found = False
+        count = 0
+
+        while not found:
+            black = False
+            for y in range(-2,2):
+                for x in range(-2,2):
+                    b = radiograph[int(centre[1])+y][int(centre[0] + x)]
+                    if b < 0.0:
+                        break
+                if b < 0.0:
+                    break
+            found = not (b < 0.0)
+
+            if found:
+                break
+            else:
+                count = (count * (-1)) + 1 if count <= 0 else count * (-1)
+                centre = np.rint(landmark + count * normalised)
+                centre = centre.astype(int)
+        return centre
 
 
 def load_landmarks(directory, incisor, mirrored):
