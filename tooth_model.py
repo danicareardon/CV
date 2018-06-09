@@ -1,5 +1,5 @@
 from procustes_analysis import procrustes
-from pca import pca_code
+from pca import pca_code, num_eig
 import pltr as plotter
 import matplotlib.pyplot as MPL
 
@@ -38,4 +38,18 @@ class Tooth(object):
         self.preprocess(landmarks)
 
         # perform PCA analysis
-        self.reduced, self.evals, self.evecs, self.mu = pca_code(self.aligned)
+        evals, evecs, mu = pca_code(self.aligned)
+        num = num_eig(var_per=0.98,evals)
+
+        Q = []
+        for i in range(0,num):
+            Q.append(evals[i]*evecs[i,:i])
+        self.Q = Q
+
+
+    # def model_reconstruction(self):
+        # """ reconstructs the model based on the Model Reconstruction summarization
+        #
+        #     Returns:
+        #         x_new : the reconstructed model
+        # """
