@@ -56,11 +56,10 @@ class Tooth(object):
         """
         landmarks = get_vectors(landmarks)
         mu = get_vectors([self.mean_shape])
-        # y = np.subtract(landmarks,mu).squeeze()
-        y = np.abs(landmarks - mu)
+        y = np.subtract(landmarks,mu).squeeze()
         # print(y)
         # print(y.T.shape)
         # print(self.Q)
         # print(self.Q.T.shape)
-        c = np.linalg.lstsq(y.T,self.Q.T,rcond=None)
+        c = np.linalg.lstsq(y.T,self.Q.T,rcond=None)[0]
         self.c = c
