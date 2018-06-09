@@ -16,12 +16,13 @@ from tooth_model import Tooth
 def main():
     directory = os.path.join(".", "_Data/Landmarks/")
 
-    for num in range(1, 9):
+    for num in range(1, 2):
         # 1.1 load landmarks
         landmarks = load_landmarks(directory, num, mirrored=False)
         tooth = Tooth(num)
-
-        tooth.ASM(landmarks)
+        tooth.preprocess(landmarks)
+        tooth.ASM(tooth.aligned)
+        tooth.model_reconstruction(tooth.aligned)
 
 if __name__ == "__main__":
     main()

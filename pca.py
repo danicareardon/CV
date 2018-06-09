@@ -37,9 +37,9 @@ def pca_code(landmarks):
     # evecs = evecs[:,:i]
     #
     # # reduced = np.dot(evecs.T,X.T).T
-    return evals, evecs,mu
+    return evals,evecs,mu
 
-def num_eig(self,var_per=0.98,evals):
+def num_eig(var_per,evals):
     """ chooses the number of eigenvalues
         Args:
             var_per (int) : 0 < var_per < 1.0
@@ -49,5 +49,5 @@ def num_eig(self,var_per=0.98,evals):
         Returns:
             (int) : number of eigenvectors to choose
     """
-        var = np.cumsum(evals)/np.sum(evals)
-        return np.argmax(var>=var_per)
+    var = np.cumsum(evals)/np.sum(evals)
+    return np.argmax(var>=var_per)
