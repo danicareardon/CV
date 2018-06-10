@@ -7,6 +7,7 @@ from landmarks import Landmarks, get_vectors,load_landmarks
 from radiograph import Radiograph,load_radiographs
 import os
 import utils
+from pltr import plot_all_landmarks
 
 class Tooth(object):
     """class for each incisor
@@ -43,24 +44,56 @@ class Tooth(object):
         self.preprocess(landmarks)
 
         # perform PCA analysis
-        evals,evecs,mu = pca_code(self.aligned)
-        num = num_eig(0.98,evals)
+        [evals,evecs,mu] = pca_code(self.aligned)
 
         Q = []
-        for i in range(0,num):
-            Q.append(evals[i]*evecs[:,i])
-        self.Q = np.array(Q).squeeze()
+
+        n = len(evals)
+        for i in range(0,n):
+            Q.append(evals[i]* evecs[:,i])
+        self.Q = Q
         self.mu = mu
+        self.evals = evals
+        self.evecs = evecs
 
+    @staticmethod
+    def get_pt_difference(landmarks,n):
+        d = np.zeros((n,n))
 
-    def model_reconstruction(self,landmarks):
-        """ reconstructs the model based on the Model Reconstruction
-            summarization using the least squares method
+        for i in range(0,n):
+            for j in range(0,n):
+                p1 = landmarks.get_coordinate_at_index(i)
+                p2 = landmarks.get_coordinate_at_index(j)
+                d[i,j] = utils.get_distance(p1,p2)
+        return d
+
+    def get_weights(self,landmarks1,landmarks2):
+        """ returns a transposed vector of get_weights
         """
-        landmarks = get_vectors(landmarks)
-        y = np.subtract(landmarks,self.mu).squeeze()
-        c = np.linalg.lstsq(y.T,self.Q.T,rcond=None)[0].squeeze()
-        self.c = c
+
+        n = landmarks1.get_length()
+        d1 = self.get_pt_difference(landmarks1,n)
+
+        if landmarks2 is None:
+            d2 = np.zeros((n,n))
+        else:
+            d2 = self.get_pt_difference(landmarks2,n)
+
+        w = np.zeros((n))
+        for i in range(0,n):
+            for j in range(0,n):
+                w[i] += np.var([d1[i,j],d2[i,j]])
+        w = 1/w
+        print(w)
+        return w
+
+
+    def model_reconstruction(self,landmarks,img):
+        """
+        """
+        dx = self.get_direction(landmarks,img)
+        self.get_weights(dx,None)
+
 
     def get_direction(self,landmarks,radiograph):
         """ get a direction for an edge for the model reconstruction
@@ -70,9 +103,11 @@ class Tooth(object):
             norm = self.normalised(landmarks,index)
             x = landmark.get_edge(norm,radiograph)
             X.append(x)
-        return X
+        dx = Landmarks(X)
+        return dx
 
-    def normalised(self,landmarks,index):
+    @staticmethod
+    def normalised(landmarks,index):
         max = len(landmarks)
         next = (index+1)%max
         prev = (index-1)%max
@@ -98,6 +133,6 @@ if __name__ == "__main__":
         landmarks = load_landmarks(directory, num, mirrored=False)
         tooth = Tooth(num)
         tooth.preprocess(landmarks)
-        # tooth.ASM(tooth.aligned)
-        # tooth.model_reconstruction(tooth.aligned)
+        tooth.ASM(tooth.aligned)
+        tooth.model_reconstruction(tooth.aligned,processed)
         # tooth.get_direction(tooth.aligned,processed)

@@ -14,8 +14,8 @@ def get_distance(p1,p2):
     y = p1[1] + p2[0]
     return np.sqrt(x**2 + y**2)
 
-def get_pw_matrix():
-    print()
+# def get_pw_matrix(landmarks):
+#     n = len()
 
 def line(prev,curr,next,val):
     """ checks if the landmarks are in a line
@@ -54,8 +54,8 @@ def subtract_angle(landmark,angle):
     return [x,y]
 
 def normalized(prev,curr,next):
-    angle = angle(next,prev)
-    d = subtract_angle(curr,angle)
+    a = angle(next,prev)
+    d = subtract_angle(curr,a)
     if np.array_equal(d,[0,0]):
         d = subtract(next,prev)
     mag = np.sqrt(d[0]**2,d[1]**2)

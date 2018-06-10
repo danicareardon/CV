@@ -20,6 +20,11 @@ class Landmarks(object):
                 self.coordinates = np.array((data[:lngth], data[lngth:])).T
             elif isinstance(data,np.ndarray) and data.shape[1] == 2:
                 self.coordinates = data
+            elif isinstance(data, list):
+                coordinates = []
+                for (x,y) in data:
+                    coordinates.append(np.array([float(x),float(y)]))
+                    self.coordinates = np.array(coordinates)
 
     def get_centroid(self):
         """Gets the centroid of the coordinates
@@ -77,7 +82,6 @@ class Landmarks(object):
         coordinates = coordinates + centroid
         return Landmarks(coordinates)
 
-
     def get_vector(self):
         """returns the coordinates as a vector
 
@@ -105,6 +109,15 @@ class Landmarks(object):
         Y = self.coordinates[:,1].max()
         return X,Y
 
+    def get_coordinate_at_index(self,index):
+        """ returns a coordinate for the index
+        """
+        max = self.get_length()
+        if index < max:
+            return self.coordinates[index]
+        else:
+            return self.coordinates[index%max]
+
     def get_x(self):
         """ returns all X coordinates
         """
@@ -114,6 +127,12 @@ class Landmarks(object):
         """ returns all X coordinates
         """
         return self.coordinates[:,1]
+
+    def get_length(self):
+        """ returns the length
+        """
+        [n,d] = self.coordinates.shape
+        return n
 
     def _read_landmarks(self, file):
         """reads the landmarks from a file
