@@ -6,6 +6,7 @@ import numpy as np
 from landmarks import Landmarks, get_vectors,load_landmarks
 from radiograph import Radiograph,load_radiographs
 import os
+import utils
 
 class Tooth(object):
     """class for each incisor
@@ -54,7 +55,7 @@ class Tooth(object):
 
     def model_reconstruction(self,landmarks):
         """ reconstructs the model based on the Model Reconstruction
-            summarization
+            summarization using the least squares method
         """
         landmarks = get_vectors(landmarks)
         y = np.subtract(landmarks,self.mu).squeeze()
@@ -73,50 +74,15 @@ class Tooth(object):
 
     def normalised(self,landmarks,index):
         max = len(landmarks)
-        next = (index + 1)%max
-        prev = (index - 1)%max
+        next = (index+1)%max
+        prev = (index-1)%max
 
-        if self.__line(landmarks[prev],landmarks[index],landmarks[next],0):
+        if utils.line(landmarks[prev],landmarks[index],landmarks[next],0):
             return np.array([1,0])
-        elif self.__line(landmarks[prev],landmarks[index],landmarks[next],1):
+        elif utils.line(landmarks[prev],landmarks[index],landmarks[next],1):
             return np.array([0,1])
         else:
-            return self.__normalized(landmarks[prev],landmarks[index],landmarks[next])
-
-    def __line(self,prev,curr,next,val):
-        ret = False
-        if val is 0:
-            if np.array_equal(prev.get_x(),next.get_x()):
-                if np.array_equal(prev.get_x(),curr.get_x()):
-                    ret = True
-        elif val is 1:
-            if np.array_equal(prev.get_y(),next.get_y()):
-                if np.array_equal(prev.get_y(),curr.get_y()):
-                    ret = True
-        return ret
-
-    def __angle(self,next,prev):
-        x = np.mean([next.get_x(),prev.get_x()])
-        y = np.mean([next.get_y(),prev.get_y()])
-        return [x,y]
-
-    def __subtract(self,landmark1,landmark2):
-        x = landmark1.get_x()-landmark2.get_x()
-        y = landmark1.get_y()-landmark2.get_y()
-        return [x,y]
-
-    def __subtract_angle(self,landmark,angle):
-        x = landmark.get_x() - angle[0]
-        y = landmark.get_y() - angle[1]
-        return [x,y]
-
-    def __normalized(self,prev,curr,next):
-        angle = self.__angle(next,prev)
-        d = self.__subtract_angle(curr,angle)
-        if np.array_equal(d,[0,0]):
-            d = self.__subtract(next,prev)
-        mag = np.sqrt(d[0]**2,d[1]**2)
-        return d/mag
+            return utils.normalized(landmarks[prev],landmarks[index],landmarks[next])
 
 
 if __name__ == "__main__":
@@ -132,6 +98,6 @@ if __name__ == "__main__":
         landmarks = load_landmarks(directory, num, mirrored=False)
         tooth = Tooth(num)
         tooth.preprocess(landmarks)
-        tooth.ASM(tooth.aligned)
-        tooth.model_reconstruction(tooth.aligned)
-        tooth.get_direction(tooth.aligned,processed)
+        # tooth.ASM(tooth.aligned)
+        # tooth.model_reconstruction(tooth.aligned)
+        # tooth.get_direction(tooth.aligned,processed)
