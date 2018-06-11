@@ -13,20 +13,18 @@ class Tooth(object):
     """class for each incisor
     """
 
-    def __init__(self, num):
+    def __init__(self, num, landmarks):
         """new incisor
-
         Args:
             num (int 1-8): int representing the tooth number
         """
+        self.preprocess(landmarks)
         self.num = num
 
     def preprocess(self, landmarks):
         """performs procustes analysis on the landmarks
-
             Args:
                 landmarks (list[Landmarks]) : all landmarks for an incisors
-
             Returns:
                 mean_shape ([Landmarks]) : estimate of the mean_shape
                 aligned (List[Landmarks]) : all landmarks aligned to the mean
@@ -35,10 +33,8 @@ class Tooth(object):
 
     def ASM(self,landmarks):
         """performs ASM on the models
-
             Args:
                 landmarks (list[Landmarks]) : all landmarks for an incisors
-
         """
         # preprocess using procrustes
         self.preprocess(landmarks)
@@ -131,7 +127,7 @@ if __name__ == "__main__":
     for num in range(1, 2):
         # 1.1 load landmarks
         landmarks = load_landmarks(directory, num, mirrored=False)
-        tooth = Tooth(num)
+        tooth = Tooth(num,landmarks)
         tooth.preprocess(landmarks)
         tooth.ASM(tooth.aligned)
         tooth.model_reconstruction(tooth.aligned,processed)
