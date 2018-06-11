@@ -31,14 +31,11 @@ class Tooth(object):
         """
         self.mean_shape, self.aligned = procrustes(landmarks,self.num)
 
-    def ASM(self,landmarks):
+    def ASM(self):
         """performs ASM on the models
             Args:
                 landmarks (list[Landmarks]) : all landmarks for an incisors
         """
-        # preprocess using procrustes
-        self.preprocess(landmarks)
-
         # perform PCA analysis
         [evals,evecs,mu] = pca_code(self.aligned)
 
@@ -80,15 +77,26 @@ class Tooth(object):
             for j in range(0,n):
                 w[i] += np.var([d1[i,j],d2[i,j]])
         w = 1/w
-        print(w)
         return w
 
+    @staticmethod
+    def get_sum(arr):
+        return np.sum(arr)
 
-    def model_reconstruction(self,landmarks,img):
+    @staticmethod
+    def get_pose_parameters(arr,w):
+        """ Args: arr (either all x or all y coordinates)
+        weighted array
+        """
+        c = arr + w
+
+
+    def model_reconstruction(self,img):
         """
         """
-        dx = self.get_direction(landmarks,img)
-        self.get_weights(dx,None)
+        dx = self.get_direction(self.aligned,img)
+        w = self.get_weights(dx,None)
+        self.get_pose_parameters(dx.get_x(),w)
 
 
     def get_direction(self,landmarks,radiograph):
@@ -128,6 +136,6 @@ if __name__ == "__main__":
         # 1.1 load landmarks
         landmarks = load_landmarks(directory, num, mirrored=False)
         tooth = Tooth(num,landmarks)
-        tooth.ASM(tooth.aligned)
-        tooth.model_reconstruction(tooth.aligned,processed)
+        tooth.ASM()
+        tooth.model_reconstruction(processed)
         # tooth.get_direction(tooth.aligned,processed)
