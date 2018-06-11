@@ -18,8 +18,8 @@ class Tooth(object):
         Args:
             num (int 1-8): int representing the tooth number
         """
-        self.preprocess(landmarks)
         self.num = num
+        self.preprocess(landmarks)
 
     def preprocess(self, landmarks):
         """performs procustes analysis on the landmarks
@@ -128,7 +128,6 @@ if __name__ == "__main__":
         # 1.1 load landmarks
         landmarks = load_landmarks(directory, num, mirrored=False)
         tooth = Tooth(num,landmarks)
-        tooth.preprocess(landmarks)
         tooth.ASM(tooth.aligned)
         tooth.model_reconstruction(tooth.aligned,processed)
         # tooth.get_direction(tooth.aligned,processed)
