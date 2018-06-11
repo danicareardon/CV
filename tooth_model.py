@@ -13,12 +13,13 @@ class Tooth(object):
     """class for each incisor
     """
 
-    def __init__(self, num):
+    def __init__(self, num, landmarks):
         """new incisor
 
         Args:
             num (int 1-8): int representing the tooth number
         """
+        self.preprocess(landmarks)
         self.num = num
 
     def preprocess(self, landmarks):
