@@ -22,10 +22,13 @@ class Radiograph(object):
             self.path = path
             self.img = cv2.imread(path,0)
 
-        def plot_img(self):
-            cv2.imshow('radiograph',self.img)
+        def plot_img(self,image,name):
+            img = image.copy()
+            img = cv2.resize(img, (432, 228))
+            cv2.imshow('radiograph',img)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+            cv2.imwrite("Results/Radiographs/" + name, img);
 
         def plot_test(self,img,name):
             cv2.namedWindow(name,cv2.WINDOW_NORMAL)
@@ -144,5 +147,7 @@ def load_radiographs(x,y):
 if __name__ == "__main__":
     imgs = load_radiographs(1,2)
     for i in imgs:
+        i.plot_img(i.img,"unfiltered.jpg")
         i.preprocess()
+        i.plot_img(i.sobel,"filtered.jpg")
         x = i.gaussian_pyramid(2)
