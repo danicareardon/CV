@@ -64,11 +64,14 @@ def __drag(x, y, img):
     cv2.namedWindow('choose', cv2.WINDOW_NORMAL)
     cv2.resizeWindow('choose', 600, 600)
     cv2.imshow('choose', tmp)
+    
+    
+
 
 
 if __name__ == "__main__":
     directory = os.path.join(".", "_Data/Landmarks/")
-    imgs = rg.load_radiographs(1,2)
+    imgs = rg.load_radiographs(1,4)
     landmarks = load_landmarks(directory, 2, mirrored=False)
     for i in imgs:
         i.preprocess()

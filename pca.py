@@ -16,15 +16,16 @@ def pca_code(landmarks):
     # vectors-from-sklearn-pca answer
     X = get_vectors(landmarks)
     mu = X.mean(axis=0)
-    X = X - mu
+    #X = X - mu
 
     var_per = 0.98
+    pca_components = 6
 
     # covariance matrix
     cov = np.cov(X, rowvar=0)
 
     # get the eigs
-    evals, evecs = LA.eigh(cov)
+    evals, evecs = np.linalg.eigh(cov)
 
     # sort by highest eigenvalue
     idx = np.argsort(-evals)

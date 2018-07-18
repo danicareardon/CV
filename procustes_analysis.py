@@ -70,10 +70,11 @@ def align_two_shapes(shape1,shape2):
     Returns:
         [Landmarks] : shape 1 aligned
     """
-    s, theta = get_s_and_theta(shape1,shape2)
+    t, s, theta = get_s_and_theta(shape1,shape2)
 
     shape1 = shape1.rotate(theta)
     shape1 = shape1.scale(s)
+    shape1 = shape1.translate(t)
 
     scaled = np.dot(shape1.get_vector(), shape2.get_vector())
     return Landmarks(shape1.get_vector()*(1.0/scaled))
@@ -96,7 +97,9 @@ def get_s_and_theta(shape1,shape2):
 
     len1 = int(len(shape1)/2)
     len2 = int(len(shape2)/2)
-
+    
+    shape1_centroid = np.array([np.mean(shape1[:len1]), np.mean(shape1[len1:])])
+    shape2_centroid = np.array([np.mean(shape2[:len2]), np.mean(shape2[len2:])])    
 
     a = np.dot(shape1,shape2) / (np.linalg.norm(shape1)**2)
     b = (np.dot(shape1[:len1], shape2[len2:]) - np.dot(shape1[len1:], shape2[:len2])) / (np.linalg.norm(shape1)**2)
@@ -104,5 +107,7 @@ def get_s_and_theta(shape1,shape2):
     s = np.sqrt(a**2+b**2)
 
     theta = np.arctan(b/a)
+    
+    t = shape2_centroid - shape1_centroid
 
-    return s,theta
+    return t, s, theta

@@ -3,12 +3,13 @@ import numpy as np
 from os import listdir
 from os.path import isfile, join
 from matplotlib import pyplot as plt
+import os
 
 # todo: Sobel edge detection due to
 # https://www.sciencedirect.com/science/article/pii/S2213020916301094
 
 # sobel + gaussian + laplacian filter
-
+complete_path = "C:/Users/Akash/PycharmProjects/CV/CV/_Data/PreprocessedImages/"
 class Radiograph(object):
         """class for each radiograph image
         """
@@ -127,22 +128,28 @@ def load_radiographs(x,y):
         y (int) : y < 31
     """
     paths = []
+    files_in_dir = os.listdir("C:/Users/Akash/PycharmProjects/CV/CV/_Data/Radiographs/");
+    files_in_dir = [file for file in files_in_dir if file.endswith(".tif")]
     for i in range(x,y):
         if i < 15 and i > 0:
-            dir = join(".", "_Data/Radiographs/")
+            dir = join(".", "C:/Users/Akash/PycharmProjects/CV/CV/_Data/Radiographs/")
             name = "%02d.tif" % i
             if isfile(join(dir,name)):
                 paths.append(join(dir,name))
         elif i > 14 and i < 31:
-            dir = join(".", "_Data/Radiographs/extra/")
+            dir = join(".", "C:/Users/Akash/PycharmProjects/CV/CV/_Data/Radiographs/extra/")
             name = "%02d.tif" % i
             if isfile(join(dir,name)):
                 paths.append(join(dir,name))
     imgs = [Radiograph(path) for path in paths]
-    return imgs
+    return files_in_dir, imgs
 
 if __name__ == "__main__":
-    imgs = load_radiographs(1,2)
+    [file_names, imgs] = load_radiographs(1,15)
+    index = 0
     for i in imgs:
         i.preprocess()
-        x = i.gaussian_pyramid(2)
+        x = i.sobel
+        complete_path1=complete_path + file_names[index]
+        cv2.imwrite(complete_path1, x)
+        index = index+1

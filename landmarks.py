@@ -6,7 +6,7 @@ class Landmarks(object):
     """class for all landmarks of one incisor
     """
 
-    def __init__(self, data):
+    def __init__(self, data=None):
         """new set of landmarks
 
         Args:
@@ -123,6 +123,9 @@ class Landmarks(object):
         """
         return self.coordinates[:,0]
 
+    def invT(self, t, s, theta):
+        return self.translate(-t).scale(1 / s).rotate(-theta)
+
     def get_y(self):
         """ returns all X coordinates
         """
@@ -146,6 +149,9 @@ class Landmarks(object):
         for x, y in zip(lines[0::2], lines[1::2]):
             coordinates.append(np.array([float(x),float(y)]))
         self.coordinates = np.array(coordinates)
+        
+    def set_coordinates(self,coord):
+        self.coordinates = coord
 
     def get_edge(self,normalised,radiograph):
         landmark = (self.get_x()[0],self.get_y()[0])
@@ -171,7 +177,20 @@ class Landmarks(object):
                 centre = np.rint(landmark + count * normalised)
                 centre = centre.astype(int)
         return centre
-
+        
+    def translate(self, vec):
+        coord = self.coordinates + vec
+        temp = Landmarks(coord)
+        return temp
+    
+    def get_crown(self, is_upper):
+        if is_upper:
+            temp = Landmarks(self.coordinates[10:30, :])
+            return temp
+        else:
+            pnts = np.vstack((self.coordinates[0:10, :], self.coordinates[30:40, :]))
+            temp = Landmarks(pnts)
+            return temp
 
 def load_landmarks(directory, incisor, mirrored):
     """loads all models for one specific incisor
