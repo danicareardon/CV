@@ -131,14 +131,14 @@ class Tooth(object):
             return np.array([0,1])
         else:
             return utils.normalized(landmarks[prev],landmarks[index],landmarks[next])
-            
+
     def derive_model(self,images,landmarks,num_pixels):
         self.p = num_pixels
         self.preprocess(landmarks)
         self.ASM()
         self.glm = grey_level_model()
         self.glm.process(images,landmarks,num_pixels)
-    
+
     def calc_grad(self, img):
         img = cv2.GaussianBlur(img,(3,3),0)
         sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
@@ -146,13 +146,13 @@ class Tooth(object):
         abs_grad_x = cv2.convertScaleAbs(sobelx)
         abs_grad_y = cv2.convertScaleAbs(sobely)
         return cv2.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
-    
-    
+
+
     def fit(self, X, test_image, num_pix):
         X = self.__fit_incisor(X, test_image, self.glm, num_pix, MAX_ITER)
         print("Done - fitting teeth model for %d teeth onto test image"%self.num)
         return X
-        
+
     def __find_fit(self, X, img, grad_img, num_pix):
         fit_arr = []
         profiles = []
@@ -161,7 +161,7 @@ class Tooth(object):
         for i in range(len(X.coordinates)):
             prf = profile(img,grad_img,X,i,num_pix)
             profiles.append(prf)
-            
+
             #testing the fit
             dmin, best = np.inf, None
             dists = []
@@ -172,16 +172,16 @@ class Tooth(object):
                 if dist < dmin:
                     dmin = dist
                     best = j
-                    
+
             best_s.append(best)
             qual.append(dmin)
             best_point = [int(c) for c in prf.points[best, :]]
-        
+
         best_s.extend(best_s)
         for best, prf in zip(best_s, profiles):
             best_point = [int(c) for c in prf.points[best, :]]
             fit_arr.append(best_point)
-            
+
         is_upper = True if self.num <5 else False
         if is_upper:
             quality = np.mean(qual[10:30])
@@ -189,7 +189,7 @@ class Tooth(object):
             quality = np.mean(qual[0:10] + qual[30:40])
         temp = Landmarks(np.array(fit_arr))
         return temp, quality
-                    
+
     def __fit_incisor(self, X, test_image, glms, num_pix, max_iter):
         gradimg = self.calc_grad(test_image)
         b = np.zeros(self.pca_modes.shape[1])
@@ -242,7 +242,7 @@ class Tooth(object):
             X=temp_landmark
             nb_iter += 1
         return X
-        
+
     def pose(self, pose_params, pnts=[]):
         if len(pnts):
             temp = np.array((pnts[:40], pnts[40:])).T
@@ -254,7 +254,7 @@ class Tooth(object):
         lms = lms.scale(s)
         lms = lms.translate([tx,ty])
         return lms
-        
+
     def __update_fit_params(self, X, Y, test_image):
         # 1. Initialise the shape parameters, b, to zero (the mean shape).
         b = np.zeros(self.pca_modes.shape[1])
@@ -290,7 +290,7 @@ class Tooth(object):
             # 7. If not converged, return to step 2
 
         return b, t, s, theta
-        
+
 def resize(image, width, height):
     #find minimum scale to fit image on screen
     scale = min(float(width) / image.shape[1], float(height) / image.shape[0])
@@ -299,7 +299,7 @@ def resize(image, width, height):
 if __name__ == "__main__":
     directory = os.path.join(".", "_Data/Landmarks/")
 
-    imgs = load_radiographs(1,2)
+    imgs = load_radiographs(2,3)
     for i in imgs:
         i.preprocess()
         processed = i.sobel

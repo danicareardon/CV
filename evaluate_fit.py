@@ -2,15 +2,22 @@ import cv2
 import os
 import numpy as np
 from landmarks import Landmarks
-def evaluate_landmark(landmark, image_index, teeth_index, path="C:/Users/Akash/PycharmProjects/CV/CV/_Data/Segmentations/"):
+def evaluate_landmark(landmark, image_index, teeth_index):
 
     """
         Evaluate_landmark corresponding to teeth into image against Truth result
         returns (Precision, Recall, F) as accuracy measures
     """
+    dir = os.path.join(".", "_Data/Segmentations/")
 
-    path = path + str("%02d" % image_index) + "-"
+    print(teeth_index)
+    print(image_index)
+
+    path = str("%02d" % image_index) + "-"
     file = path + str(teeth_index - 1) + ".png"
+
+    file = os.path.join(dir,file)
+    print(file)
 
     if os.path.isfile(file):
         print(file)

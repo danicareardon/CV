@@ -17,7 +17,7 @@ from global_var import grey_profile_pixel, grey_profile_search
 import cv2
 incisor_index = 8
 image_indices = list(range(1,15))
-test_set_images = list(range(1,2))
+test_set_images = list(range(1,2)) # change the radiograph image here
 all_incisor_images = list(range(1,9))
 test_image_index = 5
 import pickle
@@ -26,14 +26,14 @@ from evaluate_fit import evaluate_landmark
 scores_p_r_f = np.zeros([len(test_set_images), len(all_incisor_images),3])
 
 def load_images(indices=list(range(1, 15))):
-    directory1 = os.path.join(".", "C:/Users/Akash/PycharmProjects/CV/CV/_Data/PreprocessedImages/")
+    directory1 = os.path.join(".", "_Data/PreprocessedImages/")
     filenames = ["%02d.tif" % i for i in indices]
     filenames = [os.path.join(os.path.dirname(__file__),directory1, f) for f in filenames]
     images = [cv2.cvtColor(cv2.imread(f), cv2.COLOR_BGR2GRAY) for f in filenames]
-    return images  
+    return images
 
 def main():
-    directory = os.path.join(".", "C:/Users/Akash/PycharmProjects/CV/CV/_Data/Landmarks/")
+    directory = os.path.join(".", "_Data/Landmarks/")
     all_images = load_images(image_indices)
     for test_image_index in test_set_images:
         train_image_indices = image_indices.copy()
@@ -52,7 +52,7 @@ def main():
                 current_teeth_model[incisor_index-1].derive_model(train_images, train_landmarks, grey_profile_pixel)
         landmark_initial=[]
         landmark_initial = get_initial_landmarks(test_image, current_teeth_model, landmark_initial, 1)
-        landmark_initial = get_initial_landmarks(test_image, current_teeth_model, landmark_initial, 0)  
+        landmark_initial = get_initial_landmarks(test_image, current_teeth_model, landmark_initial, 0)
         img = test_image.copy()
         for inscisor_index in all_incisor_images:
             landmark_final = current_teeth_model[inscisor_index-1].fit(landmark_initial[inscisor_index-1], test_image, grey_profile_search)
@@ -60,9 +60,10 @@ def main():
             #img = preprocess(img)
             colors = [(255, 255, 255), (0,0 ,255 )]
             #colors = [(0, 0, 255)]
-            indices_temp = list(range(1,15))
+            indices_temp = list(range
+            (1,15))
             all_landmarks2 = load_landmarks(directory, indices_temp, 0)
-            out = "C:/Users/Akash/PycharmProjects/CV/CV/_Data/out/"
+            out = "_Data/out/"
             for ind, lms in enumerate([all_landmarks2[test_image_index-1], landmark_final]):
             #for ind, lms in enumerate([landmark_final]):
                 points = lms.coordinates
@@ -73,8 +74,8 @@ def main():
             scores_p_r_f[test_image_index-1,inscisor_index-1,:] = evaluate_landmark(landmark_final, test_image_index, inscisor_index)
         cv2.imwrite('%s/%02d-all_final_2.png' % (out, test_image_index), img)
         print(scores_p_r_f[test_image_index-1,:,:])
-        
-    
+
+
 def get_initial_landmarks(img, current_teeth_model, initial_landmarks, is_upper):
     #resixe the image for display and taking ROI
     ht = img.shape[0]
@@ -93,7 +94,7 @@ def get_initial_landmarks(img, current_teeth_model, initial_landmarks, is_upper)
     r2[1] = r[1] / scale
     r2[2] = (r[0] + r[2]) / scale
     r2[3] = (r[1] + r[3]) / scale
-    #scale the mean landmark to the test image size 
+    #scale the mean landmark to the test image size
     #assuming each teeth has same size, get mid points for each teeth
     for ind in range(1,5):
         if is_upper:

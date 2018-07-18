@@ -9,7 +9,7 @@ import os
 # https://www.sciencedirect.com/science/article/pii/S2213020916301094
 
 # sobel + gaussian + laplacian filter
-complete_path = "C:/Users/Akash/PycharmProjects/CV/CV/_Data/PreprocessedImages/"
+complete_path = "/Users/danicareardon/Documents/School/CV2/CV/_Data/PreprocessedImages/"
 class Radiograph(object):
         """class for each radiograph image
         """
@@ -131,16 +131,16 @@ def load_radiographs(x,y):
         y (int) : y < 31
     """
     paths = []
-    files_in_dir = os.listdir("C:/Users/Akash/PycharmProjects/CV/CV/_Data/Radiographs/");
+    files_in_dir = os.listdir("_Data/Radiographs/");
     files_in_dir = [file for file in files_in_dir if file.endswith(".tif")]
     for i in range(x,y):
         if i < 15 and i > 0:
-            dir = join(".", "C:/Users/Akash/PycharmProjects/CV/CV/_Data/Radiographs/")
+            dir = join(".", "_Data/Radiographs/")
             name = "%02d.tif" % i
             if isfile(join(dir,name)):
                 paths.append(join(dir,name))
         elif i > 14 and i < 31:
-            dir = join(".", "C:/Users/Akash/PycharmProjects/CV/CV/_Data/Radiographs/extra/")
+            dir = join(".", "_Data/Radiographs/extra/")
             name = "%02d.tif" % i
             if isfile(join(dir,name)):
                 paths.append(join(dir,name))
