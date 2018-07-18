@@ -9,7 +9,6 @@ import os
 # https://www.sciencedirect.com/science/article/pii/S2213020916301094
 
 # sobel + gaussian + laplacian filter
-complete_path = "/Users/danicareardon/Documents/School/CV2/CV/_Data/PreprocessedImages/"
 class Radiograph(object):
         """class for each radiograph image
         """
@@ -145,15 +144,23 @@ def load_radiographs(x,y):
             if isfile(join(dir,name)):
                 paths.append(join(dir,name))
     imgs = [Radiograph(path) for path in paths]
-    return files_in_dir, imgs
+    return imgs
+
+def fix_name(index):
+    index = index + 1
+    if index < 10:
+        name = "0" + str(index) + ".tif"
+    else:
+        name = str(index) + ".tif"
+    return name
 
 if __name__ == "__main__":
-    [file_names, imgs] = load_radiographs(1,15)
-    index = 0
-    for i in imgs:
-        i.plot_img(i.img,"unfiltered.jpg")
+    imgs = load_radiographs(1,15)
+    for value,i in enumerate(imgs):
+        # i.plot_img(i.img,"unfiltered.jpg")
         i.preprocess()
         x = i.sobel
-        complete_path1=complete_path + file_names[index]
+        dir = os.path.join(".", "_Data/PreprocessedImages/")
+        name = fix_name(value)
+        complete_path1=os.path.join(dir + name)
         cv2.imwrite(complete_path1, x)
-        index = index+1

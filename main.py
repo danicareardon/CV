@@ -12,17 +12,18 @@ Python 3.5
 import os
 from landmarks import load_landmarks, Landmarks
 from tooth_model import Tooth, resize
-from radiograph import Radiograph
+from radiograph import Radiograph, load_radiographs, fix_name
 from global_var import grey_profile_pixel, grey_profile_search
 import cv2
+import pickle
+import numpy as np
+from evaluate_fit import evaluate_landmark
+
 incisor_index = 8
 image_indices = list(range(1,15))
 test_set_images = list(range(1,2)) # change the radiograph image here
 all_incisor_images = list(range(1,9))
 test_image_index = 5
-import pickle
-import numpy as np
-from evaluate_fit import evaluate_landmark
 scores_p_r_f = np.zeros([len(test_set_images), len(all_incisor_images),3])
 
 def load_images(indices=list(range(1, 15))):
@@ -31,6 +32,22 @@ def load_images(indices=list(range(1, 15))):
     filenames = [os.path.join(os.path.dirname(__file__),directory1, f) for f in filenames]
     images = [cv2.cvtColor(cv2.imread(f), cv2.COLOR_BGR2GRAY) for f in filenames]
     return images
+
+def save_radiographs():
+    # saves all radiograph files in case they have not previously
+    # been saved
+    one = os.path.join(".", "_Data/PreprocessedImages/01.tif")
+    if not(os.path.isfile(one)):
+        imgs = load_radiographs(1,15)
+        for value,i in enumerate(imgs):
+            # i.plot_img(i.img,"unfiltered.jpg")
+            i.preprocess()
+            x = i.sobel
+            dir = os.path.join(".", "_Data/PreprocessedImages/")
+            name = fix_name(value)
+            complete_path1=os.path.join(dir + name)
+            cv2.imwrite(complete_path1, x)
+
 
 def main():
     directory = os.path.join(".", "_Data/Landmarks/")
@@ -129,4 +146,5 @@ def get_initial_landmarks(img, current_teeth_model, initial_landmarks, is_upper)
     return initial_landmarks
 
 if __name__ == "__main__":
+    save_radiographs()
     main()
